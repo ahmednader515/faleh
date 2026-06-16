@@ -197,7 +197,7 @@ export function LiveStreamForm({ courseOptions, initialData }: Props) {
           type="datetime-local"
           value={form.scheduledAt}
           onChange={(e) => setForm((f) => ({ ...f, scheduledAt: e.target.value }))}
-          className="w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+          className="datetime-input-themed w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
           required
         />
       </div>
