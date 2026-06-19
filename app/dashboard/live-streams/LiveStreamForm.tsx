@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/components/LocaleProvider";
+import { DateTimeLocalInput } from "@/components/DateTimeLocalInput";
 
 type CourseOption = { id: string; title: string };
 
@@ -193,11 +194,9 @@ export function LiveStreamForm({ courseOptions, initialData }: Props) {
       </div>
       <div>
         <label className="mb-1 block text-sm font-medium text-[var(--color-foreground)]">{t(`${F}.labelScheduledAt`)}</label>
-        <input
-          type="datetime-local"
+        <DateTimeLocalInput
           value={form.scheduledAt}
-          onChange={(e) => setForm((f) => ({ ...f, scheduledAt: e.target.value }))}
-          className="datetime-input-themed w-full rounded-[var(--radius-btn)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm"
+          onChange={(scheduledAt) => setForm((f) => ({ ...f, scheduledAt }))}
           required
         />
       </div>

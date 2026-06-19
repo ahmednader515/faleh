@@ -4,19 +4,10 @@ import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { getLiveStreamById, getCoursesAll, getCoursesWithCountsForCreator, getCourseById } from "@/lib/db";
 import { canManageCourse } from "@/lib/permissions";
+import { toDateTimeLocalValue } from "@/lib/datetime-local";
 import { LiveStreamForm } from "../../LiveStreamForm";
 
 type Props = { params: Promise<{ id: string }> };
-
-function toDateTimeLocal(d: Date | string): string {
-  const date = typeof d === "string" ? new Date(d) : d;
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const h = String(date.getHours()).padStart(2, "0");
-  const min = String(date.getMinutes()).padStart(2, "0");
-  return `${y}-${m}-${day}T${h}:${min}`;
-}
 
 export default async function EditLiveStreamPage({ params }: Props) {
   const session = await getServerSession(authOptions);
@@ -64,7 +55,7 @@ export default async function EditLiveStreamPage({ params }: Props) {
     meetingUrl: String(s.meeting_url ?? ""),
     meetingId: String(s.meeting_id ?? s.meetingId ?? ""),
     meetingPassword: String(s.meeting_password ?? s.meetingPassword ?? ""),
-    scheduledAt: toDateTimeLocal((s.scheduled_at ?? s.scheduledAt) as Date | string),
+    scheduledAt: toDateTimeLocalValue((s.scheduled_at ?? s.scheduledAt) as Date | string),
     description: String(s.description ?? ""),
     order: Number(s.order ?? 0),
   };
