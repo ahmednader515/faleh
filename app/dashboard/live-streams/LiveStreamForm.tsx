@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useT } from "@/components/LocaleProvider";
 import { DateTimeLocalInput } from "@/components/DateTimeLocalInput";
+import { dateTimeLocalToIso, toDateTimeLocalValue } from "@/lib/datetime-local";
 
 type CourseOption = { id: string; title: string };
 
@@ -40,15 +41,29 @@ export function LiveStreamForm({ courseOptions, initialData }: Props) {
     meetingUrl: initialData?.meetingUrl ?? "",
     meetingId: initialData?.meetingId ?? "",
     meetingPassword: initialData?.meetingPassword ?? "",
-    scheduledAt: initialData?.scheduledAt ?? "",
+    scheduledAt: "",
     description: initialData?.description ?? "",
     order: initialData?.order ?? 0,
   });
+
+  useEffect(() => {
+    if (initialData?.scheduledAt) {
+      setForm((f) => ({
+        ...f,
+        scheduledAt: toDateTimeLocalValue(initialData.scheduledAt),
+      }));
+    }
+  }, [initialData?.scheduledAt]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!form.courseId || !form.title.trim() || !form.meetingUrl.trim() || !form.scheduledAt) {
+      setError(t(`${F}.validationRequired`));
+      return;
+    }
+    const scheduledAtIso = dateTimeLocalToIso(form.scheduledAt);
+    if (!scheduledAtIso) {
       setError(t(`${F}.validationRequired`));
       return;
     }
@@ -66,7 +81,7 @@ export function LiveStreamForm({ courseOptions, initialData }: Props) {
             meetingUrl: form.meetingUrl.trim(),
             meetingId: form.meetingId.trim() || null,
             meetingPassword: form.meetingPassword.trim() || null,
-            scheduledAt: form.scheduledAt,
+            scheduledAt: scheduledAtIso,
             description: form.description.trim() || null,
             order: form.order,
           }),
@@ -89,7 +104,7 @@ export function LiveStreamForm({ courseOptions, initialData }: Props) {
             meetingUrl: form.meetingUrl.trim(),
             meetingId: form.meetingId.trim() || null,
             meetingPassword: form.meetingPassword.trim() || null,
-            scheduledAt: form.scheduledAt,
+            scheduledAt: scheduledAtIso,
             description: form.description.trim() || null,
             order: form.order,
           }),

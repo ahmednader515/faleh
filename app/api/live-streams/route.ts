@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { canManageCourse } from "@/lib/permissions";
 import { getCourseById, getLiveStreamsAll, getLiveStreamsForTeacher, createLiveStream } from "@/lib/db";
+import { parseScheduledAtIso } from "@/lib/datetime-local";
 
 /** قائمة كل البثوث — للأدمن ومساعد الأدمن؛ للمدرس: بثوث كورساته فقط */
 export async function GET(request: NextRequest) {
@@ -54,6 +55,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "غير مصرح بإضافة بث لهذا الكورس" }, { status: 403 });
     }
   }
+  const scheduledAtDate = parseScheduledAtIso(scheduledAt);
+  if (!scheduledAtDate) {
+    return NextResponse.json({ error: "موعد البث غير صالح" }, { status: 400 });
+  }
   try {
     const stream = await createLiveStream({
       course_id: courseId.trim(),
@@ -63,7 +68,7 @@ export async function POST(request: NextRequest) {
       meeting_url: meetingUrl.trim(),
       meeting_id: body.meetingId?.trim() || null,
       meeting_password: body.meetingPassword?.trim() || null,
-      scheduled_at: new Date(scheduledAt),
+      scheduled_at: scheduledAtDate,
       description: body.description?.trim() || null,
       order: body.order ?? 0,
     });

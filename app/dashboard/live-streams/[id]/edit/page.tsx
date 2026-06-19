@@ -4,10 +4,15 @@ import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { getLiveStreamById, getCoursesAll, getCoursesWithCountsForCreator, getCourseById } from "@/lib/db";
 import { canManageCourse } from "@/lib/permissions";
-import { toDateTimeLocalValue } from "@/lib/datetime-local";
 import { LiveStreamForm } from "../../LiveStreamForm";
 
 type Props = { params: Promise<{ id: string }> };
+
+function toIsoString(value: unknown): string {
+  if (!value) return "";
+  const d = value instanceof Date ? value : new Date(String(value));
+  return Number.isNaN(d.getTime()) ? "" : d.toISOString();
+}
 
 export default async function EditLiveStreamPage({ params }: Props) {
   const session = await getServerSession(authOptions);
@@ -55,7 +60,7 @@ export default async function EditLiveStreamPage({ params }: Props) {
     meetingUrl: String(s.meeting_url ?? ""),
     meetingId: String(s.meeting_id ?? s.meetingId ?? ""),
     meetingPassword: String(s.meeting_password ?? s.meetingPassword ?? ""),
-    scheduledAt: toDateTimeLocalValue((s.scheduled_at ?? s.scheduledAt) as Date | string),
+    scheduledAt: toIsoString(s.scheduled_at ?? s.scheduledAt),
     description: String(s.description ?? ""),
     order: Number(s.order ?? 0),
   };
